@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Meld je aan{% endblock %}
+{% block main %}
+<p>
+Om je aan te melden hoef je alleen een geldig e-mailadres in te voeren.
+Geef hieronder je e-mailadres op en we sturen je meteen een e-mail waarmee je je wachtwoord in kan stellen en in kan loggen.
+</p>
+
+<form method="post" id="loginForm"  action="/signup/">
+  {% csrf_token %} 
+  <div class="row">
+    <div class="span7">
+      {% include "bootstrap-form.html" %}
+    </div>
+    <div class="span7">
+      <input class="btn primary" type="submit" value="Signup">
+      <input type="hidden" name="redirect_to" value="{{ redirect_to }}" /></td>
+    </div>
+  </div>
+</form>  
+<a class="btn" href="/reset/">Wachtwoord vergeten?</a>
+{% endblock %}

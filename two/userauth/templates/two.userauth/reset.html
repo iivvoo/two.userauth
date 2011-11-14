@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}
+{% if initial %}
+Stel je wachtwoord in
+{% else %}
+Kies een nieuw wachtwoord
+{% endif %}
+{% endblock %}
+{% block main %}
+{% if validlink %}
+  <form method="post" id="loginForm"  action="/reset/">
+    {% csrf_token %}
+    {% include "bootstrap-form.html" %}
+    <input type="hidden" name="uidb36" value="{{uidb36}}">
+    <input type="hidden" name="token" value="{{token}}">
+    {% if initial %}
+    <input type="hidden" name="initial" value="1">
+    {% endif %}
+    <input class="btn primary" type="submit" value="Stel in">
+    <input type="hidden" name="redirect_to" value="{{ redirect_to }}" /></td>
+  </form>  
+{% else %}
+De link die je gebruikt hebt is niet meer geldig. Je kan <a href="/reset/">hier</a> een nieuwe link aanvragen.
+{% endif %}
+{% endblock %}

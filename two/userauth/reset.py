@@ -29,10 +29,10 @@ class ForgottenForm(forms.Form):
 
 def send_reset(handler, user, initial=False):
     if initial:
-        email_template_name = "auth/initial_password_main.html"
+        email_template_name = "initial_password_main.html"
         subject = "Registratie op %s"
     else:
-        email_template_name = "auth/reset_password_main.html"
+        email_template_name = "reset_password_main.html"
         subject = "Wachtwoordherstel voor %s"
 
     from_email = settings.MAIL_SENDER
@@ -60,6 +60,7 @@ def send_reset(handler, user, initial=False):
 
 class ResetHandler(FormHandler):
     formclass = None # SetPasswordForm
+    template_ns = "two.userauth"
 
     def get_user(self, uidb36, token):
         try:
@@ -75,7 +76,7 @@ class ResetHandler(FormHandler):
     def index(self, username="", redirect_to="/"):
         self.context['form'] = self.form = ForgottenForm(initial={'username':username})
         self.context['redirect_to'] = redirect_to or '/'
-        return self.template("auth/forgotten.html")
+        return self.template("forgotten.html")
 
     @applyrequest
     def handle_forgotten(self, username, redirect_to="/"):
@@ -85,13 +86,13 @@ class ResetHandler(FormHandler):
             send_reset(self, user)
             self.redirect(redirect_to)
 
-        return self.template("auth/forgotten.html")
+        return self.template("forgotten.html")
         
     @applyrequest
     def handle_confirm(self, uidb36, token, initial=False):
         user = self.get_user(uidb36, token)
         self.context['form'] = self.form = SetPasswordForm(user)
-        return self.template("auth/reset.html", 
+        return self.template("reset.html", 
                              redirect_to="/manage/",
                              user=user, 
                              validlink=(user is not None), 
@@ -117,7 +118,7 @@ class ResetHandler(FormHandler):
         # return self.index(uidb36, token, initial)
         # return self.index(uidb36=uidb36, token=token, initial=initial)
         # return self.handle_confirm()
-        return self.template("auth/reset.html", 
+        return self.template("reset.html", 
                              user=user, 
                              redirect_to=redirect_to,
                              validlink=(user is not None), 
@@ -126,4 +127,5 @@ class ResetHandler(FormHandler):
                              initial=initial)
        
     def handle_complete(self):
-        return self.template("auth/complete.html")
+        # XXX deprecated?
+        return self.template("complete.html")

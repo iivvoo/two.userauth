@@ -8,11 +8,12 @@ from django.contrib.auth import login, logout
 
 class LoginHandler(FormHandler):
     formclass = AuthenticationForm
+    template_ns = "two.userauth"
 
     @applyrequest
     def index(self, redirect_to='/'):
         self.context['redirect_to'] = redirect_to
-        return self.template('auth/login.html')
+        return self.template('login.html')
 
     @applyrequest
     def process(self, redirect_to='/'):

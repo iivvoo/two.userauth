@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block main %}
+<form method="post" id="loginForm"  action="/login/">
+  {% csrf_token %} 
+  {% include "bootstrap-form.html" %}
+  <input type="submit" value="Login">
+  <input type="hidden" name="redirect_to" value="{{ redirect_to }}" /></td>
+</form>  
+<a  href="/reset/">Wachtwoord vergeten?</a>
+{% endblock %}

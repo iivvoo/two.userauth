@@ -19,10 +19,11 @@ class RegistrationForm(forms.Form):
 class SignupHandler(FormHandler):
     formclass = RegistrationForm
     url = "/signup/"
+    template_ns = "two.userauth"
 
     def index(self):
         self.context['redirect_to'] = "/"
-        return self.template("auth/register.html")
+        return self.template("register.html")
 
     @applyrequest
     def process(self, redirect_to="/"):

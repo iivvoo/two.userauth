@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Wachtwoord vergeten?{% endblock %}
+{% block main %}
+<p>
+Geef hieronder het e-mailadres waarmee je je geregistreerd hebt en we sturen je meteen instructies hoe je weer toegang kan krijgen tot qr.nl.
+</p>
+<form method="post" id="loginForm"  action="/reset/forgotten">
+  {% csrf_token %}
+  <div class="row">
+    <div class="span7">
+      {% include "bootstrap-form.html" %}
+    </div>
+    <div class="span7">
+      <input class="btn primary" type="submit" value="Reset">
+      <input type="hidden" name="redirect_to" value="{{ redirect_to }}" /></td>
+    </div>
+  </div>
+</form>  
+{% endblock %}
