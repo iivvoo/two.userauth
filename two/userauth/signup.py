@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
-from qrnl.auth.reset import send_reset
+from two.userauth.reset import send_reset
 
 class RegistrationForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), max_length=75)
