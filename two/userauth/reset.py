@@ -84,7 +84,7 @@ class ResetHandler(FormHandler):
         if self.form.is_valid():
             user = User.objects.get(username=self.form.data['username'])
             send_reset(self, user)
-            self.redirect(redirect_to)
+            self.redirect(redirect_to or "/", success="Instructies om je wachtwoord te herstellen zijn per e-mail verstuurd.")
 
         return self.template("forgotten.html")
         
