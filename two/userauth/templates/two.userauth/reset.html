@@ -10,7 +10,7 @@ Kies een nieuw wachtwoord
 {% if validlink %}
   <form method="post" id="loginForm"  action="/reset/">
     {% csrf_token %}
-    {% include "bootstrap-form.html" %}
+    {% include "two.bootstrap/bootstrap-form.html" %}
     <input type="hidden" name="uidb36" value="{{uidb36}}">
     <input type="hidden" name="token" value="{{token}}">
     {% if initial %}
