@@ -28,6 +28,10 @@ class ForgottenForm(forms.Form):
         return username
 
 def send_reset(handler, user, initial=False):
+    remote_addr = handler.request.META.get('X_FORWARDED_FOR')
+    if remote_addr is None:
+        remote_addr = handler.request.META.get('REMOTE_ADDR')
+
     if initial:
         email_template_name = "initial_password_main.html"
         subject = "Registratie op %s"
@@ -53,6 +57,7 @@ def send_reset(handler, user, initial=False):
         user=user,
         token=token_generator.make_token(user),
         protocol=use_https and 'https' or 'http',
+        remote_addr=remote_addr
     )
     
     send_mail(_(subject) % site_name, t, from_email, [user.email]) 
