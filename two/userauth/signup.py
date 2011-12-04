@@ -25,14 +25,20 @@ class SignupHandler(FormHandler):
         self.context['redirect_to'] = "/"
         return self.template("register.html")
 
+    def get_username(self):
+        return self.form.data['email']
+        
     @applyrequest
     def process(self, redirect_to="/"):
         if self.form.is_valid():
             ## in this case @applyform would be nice?
             email = self.form.data['email']
-            u = User(username=email, email=email)
+            username = self.get_username(self.form)
+
+            u = User(username=username, email=email)
             u.set_unusable_password()
             u.save()
             send_reset(self, u, initial=True)
             self.redirect(redirect_to, success="Aanmelding succesvol, verdere instructies zijn per email verstuurd.")
         return self.index()
+
