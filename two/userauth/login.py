@@ -5,6 +5,22 @@ from two.ol.base import applyrequest
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
+
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+
+class EmailAuthenticationForm(AuthenticationForm):
+    ## Add validation on emailfield - check if it exists
+    def clean(self):
+        email = self.cleaned_data['username']
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise forms.ValidationError(_("Please enter a correct email address."))
+
+        self.cleaned_data['username'] = user.username
+        return super(EmailAuthenticationForm, self).clean()
 
 class LoginHandler(FormHandler):
     formclass = AuthenticationForm
@@ -34,3 +50,6 @@ class LoginHandler(FormHandler):
     def handle_logout(self, redirect_to="/login/"):
         logout(self.request)
         self.redirect(redirect_to, success="Je bent nu uitgelogd.")
+
+class EmailLoginHandler(LoginHandler):
+    formclass = EmailAuthenticationForm
