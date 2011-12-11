@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 
 from two.userauth.reset import send_reset
 
+import hashlib
+
 class RegistrationForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), max_length=75)
 
@@ -25,8 +27,10 @@ class SignupHandler(FormHandler):
         self.context['redirect_to'] = "/"
         return self.template("register.html")
 
-    def get_username(self):
-        return self.form.data['email']
+    def get_username(self, form):
+        """ email is not suitable as username, generate a hash in stead """
+        email = form.data['email']
+        return hashlib.md5(email).hexdigest()
         
     @applyrequest
     def process(self, redirect_to="/"):
