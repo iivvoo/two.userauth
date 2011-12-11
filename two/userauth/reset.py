@@ -19,14 +19,25 @@ from django.conf import settings
 class ForgottenForm(forms.Form):
     username = forms.EmailField(label=_("Username"), max_length=75)
 
+    def get_user(self, username):
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise forms.ValidationError(_("No user is known with this username."))
+
     def clean_username(self):
         username = self.cleaned_data["username"].strip().lower()
-        try:
-            User.objects.get(username=username)
-        except User.DoesNotExist:
-            raise forms.ValidationError(_("No user is known with this email address/username."))
-        return username
+        self.user = self.get_user(username)
+        return self.user
 
+class EmailForgottenForm(ForgottenForm):
+    """ username is actually email address """
+    def get_user(self, username):
+        try:
+            return User.objects.get(email=username)
+        except User.DoesNotExist:
+            raise forms.ValidationError(_("No user is known with this email address."))
+        
 def send_reset(handler, user, initial=False):
     remote_addr = handler.request.META.get('X_FORWARDED_FOR')
     if remote_addr is None:
@@ -64,6 +75,7 @@ def send_reset(handler, user, initial=False):
 
 
 class ResetHandler(FormHandler):
+    resetform = ForgottenForm
     formclass = None # SetPasswordForm
     template_ns = "two.userauth"
 
@@ -79,15 +91,15 @@ class ResetHandler(FormHandler):
 
     @applyrequest
     def index(self, username="", redirect_to="/"):
-        self.context['form'] = self.form = ForgottenForm(initial={'username':username})
+        self.context['form'] = self.form = self.resetform(initial={'username':username})
         self.context['redirect_to'] = redirect_to or '/'
         return self.template("forgotten.html")
 
     @applyrequest
     def handle_forgotten(self, username, redirect_to="/"):
-        self.context['form'] = self.form = ForgottenForm(data=self.request.POST)
+        self.context['form'] = self.form = self.resetform(data=self.request.POST)
         if self.form.is_valid():
-            user = User.objects.get(username=self.form.data['username'])
+            user = self.form.user
             send_reset(self, user)
             self.redirect(redirect_to or "/", success="Instructies om je wachtwoord te herstellen zijn per e-mail verstuurd.")
 
@@ -134,3 +146,6 @@ class ResetHandler(FormHandler):
     def handle_complete(self):
         # XXX deprecated?
         return self.template("complete.html")
+
+class EmailResetHandler(ResetHandler):
+    resetform = EmailForgottenForm
