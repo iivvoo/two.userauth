@@ -36,7 +36,7 @@ class SignupHandler(FormHandler):
     def process(self, redirect_to="/"):
         if self.form.is_valid():
             ## in this case @applyform would be nice?
-            email = self.form.data['email']
+            email = self.form.data['email'].strip().lower()
             username = self.get_username(self.form)
 
             u = User(username=username, email=email)
