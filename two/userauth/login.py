@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 class EmailAuthenticationForm(AuthenticationForm):
     ## Add validation on emailfield - check if it exists
     def clean(self):
-        email = self.cleaned_data['username']
+        email = self.cleaned_data.get('username', '')
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
