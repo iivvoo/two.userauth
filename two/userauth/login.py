@@ -26,6 +26,16 @@ class LoginHandler(FormHandler):
     formclass = AuthenticationForm
     template_ns = "two.userauth"
 
+    def loggedin(self, user):
+        """ invoked when a user has logged in """
+        ## returning True will result in default redirect
+        return True
+
+    def loggedout(self, user):
+        """ invoked when a user has logged out """
+        ## returning True will result in default redirect
+        return True
+
     @applyrequest
     def index(self, redirect_to='/'):
         self.context['redirect_to'] = redirect_to
@@ -39,7 +49,8 @@ class LoginHandler(FormHandler):
                 redirect_to = '/'
 
             login(self.request, self.form.get_user())
-            self.redirect(redirect_to, success="Je bent nu ingelogd.")
+            if self.loggedin(self.user()):
+                self.redirect(redirect_to, success="Je bent nu ingelogd.")
 
         if '__all__' in self.form.errors:
             ## assume username/password incorrect
@@ -48,8 +59,10 @@ class LoginHandler(FormHandler):
 
     @applyrequest
     def handle_logout(self, redirect_to="/login/"):
+        user = self.user()
         logout(self.request)
-        self.redirect(redirect_to, success="Je bent nu uitgelogd.")
+        if self.loggedout(user):
+            self.redirect(redirect_to, success="Je bent nu uitgelogd.")
 
 class EmailLoginHandler(LoginHandler):
     formclass = EmailAuthenticationForm
