@@ -30,7 +30,7 @@ class SignupHandler(FormHandler):
     def get_username(self, form):
         """ email is not suitable as username, generate a hash in stead """
         email = form.data['email']
-        return hashlib.md5(email).hexdigest()
+        return hashlib.md5(email).hexdigest()[:30]
         
     @applyrequest
     def process(self, redirect_to="/"):
